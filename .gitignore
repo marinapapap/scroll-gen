@@ -1,0 +1,9 @@
+# Environment variables — never commit this
+.env
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

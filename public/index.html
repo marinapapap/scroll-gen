@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scroll Generator — MVP</title>
+    <style>
+      body {
+        font-family: Georgia, serif;
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        background: #f9f9f9;
+        color: #222;
+        line-height: 1.8;
+      }
+
+      h1 {
+        font-size: 1.6em;
+        margin-bottom: 6px;
+      }
+
+      .subtitle {
+        color: #888;
+        font-size: 0.9em;
+        margin-bottom: 40px;
+      }
+
+      .block {
+        min-height: 100vh;
+        padding: 30px 0;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .block p {
+        margin-bottom: 16px;
+      }
+
+      .block .label {
+        font-size: 0.75em;
+        color: #bbb;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+
+      #loader {
+        text-align: center;
+        padding: 40px;
+        color: #aaa;
+        font-style: italic;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Scroll Generator</h1>
+    <p class="subtitle">Scroll down to generate new content via AI.</p>
+
+    <div id="blocks"></div>
+    <div id="loader">generating...</div>
+    <div id="sentinel"></div>
+
+    <script>
+      let count = 0;
+      let busy = false;
+
+      async function generate() {
+        if (busy) return;
+        busy = true;
+
+        const loader = document.getElementById("loader");
+        loader.style.display = "block";
+
+        try {
+          const res = await fetch("/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: `Write a short piece of content for section ${count + 1} of a website.
+                     Make it feel like a personal webpage entry.
+                     2-3 paragraphs, conversational tone.`,
+            }),
+          });
+
+          const data = await res.json();
+          const text = data.result || "something went wrong.";
+
+          const block = document.createElement("div");
+          block.className = "block";
+          block.innerHTML = `
+          <div class="label">section ${count + 1}</div>
+          ${text
+            .split("\n")
+            .filter((p) => p.trim())
+            .map((p) => `<p>${p}</p>`)
+            .join("")}
+        `;
+
+          document.getElementById("blocks").appendChild(block);
+          count++;
+        } catch (err) {
+          console.error(err);
+        }
+
+        loader.style.display = "none";
+        busy = false;
+      }
+
+      // Set up Intersection Observer
+      const sentinel = document.getElementById("sentinel");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              generate();
+            }
+          });
+        },
+        {
+          rootMargin: "1000px", // Trigger 1000px before sentinel comes into view
+        },
+      );
+
+      observer.observe(sentinel);
+
+      // Generate initial content
+      generate().then(() => generate());
+    </script>
+  </body>
+</html>
