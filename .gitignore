@@ -4,6 +4,10 @@
 # Node
 node_modules/
 
+# SvelteKit
+.svelte-kit/
+build/
+
 # OS
 .DS_Store
 Thumbs.db

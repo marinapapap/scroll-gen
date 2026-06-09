@@ -26,28 +26,34 @@ HF_TOKEN=your_token_here
 npm run dev
 ```
 
-Then open `http://localhost:3000` in your browser.
+Then open `http://localhost:5173` in your browser.
 
 ## Structure
 
 ```
 scrollgen/
-├── public/
-│   └── index.html      # frontend — scroll triggers AI generation
 ├── src/
-│   └── server.js       # Express server — holds API key, proxies HF requests
-├── .env                # your secrets — never committed
-├── .env.example        # safe to commit — shows what keys are needed
+│   ├── routes/
+│   │   ├── +page.svelte              # frontend — scroll triggers AI generation
+│   │   └── api/
+│   │       └── generate/
+│   │           └── +server.ts        # API endpoint — holds API key, calls HF
+│   ├── app.html                      # app template
+├── .env                              # your secrets — never committed
+├── .env.example                      # safe to commit — shows what keys are needed
+├── svelte.config.js                  # SvelteKit config
+├── vite.config.ts                    # Vite config
 ├── .gitignore
 └── package.json
 ```
 
 ## How it works
 
-1. Browser loads `index.html`
-2. On scroll near the bottom, JS calls `POST /generate` on the local server
-3. Server reads `HF_TOKEN` from `.env` and calls HuggingFace API
-4. Response comes back, gets appended to the page
-5. Repeat
+1. Browser loads the SvelteKit app
+2. On scroll near the bottom, the Intersection Observer triggers content generation
+3. Frontend calls `POST /api/generate` on the SvelteKit server
+4. Server reads `HF_TOKEN` from `.env` and calls HuggingFace API
+5. Response comes back, gets appended to the page
+6. Repeat
 
 The key never touches the frontend. `.env` is in `.gitignore` so it never goes to Git.
