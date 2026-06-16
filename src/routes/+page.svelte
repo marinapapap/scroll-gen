@@ -22,7 +22,7 @@
 				body: JSON.stringify({
 					prompt: `Write a short piece of content for section ${count + 1} of a website.
                      Make it feel like a personal webpage entry.
-                     2-3 paragraphs, conversational tone.`
+                     2-3 sentences, conversational tone.`
 				})
 			});
 
@@ -78,22 +78,21 @@
 </svelte:head>
 
 <h1>Scroll Generator</h1>
+
 <p class="subtitle">Scroll down to generate new content via AI.</p>
 
 <div id="blocks">
 	{#each blocks as block (block.id)}
 		<div class="block">
 			<div class="label">section {block.id + 1}</div>
-			{#each block.content
-				.split('\n')
-				.filter((p) => p.trim()) as paragraph}
-				<p>{paragraph}</p>
-			{/each}
+
+			<p>{block.content?.trim()}</p>
 		</div>
 	{/each}
 </div>
 
 <div id="loader" bind:this={loader}>generating...</div>
+
 <div id="sentinel" bind:this={sentinel}></div>
 
 <style>
