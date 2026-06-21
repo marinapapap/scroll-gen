@@ -23,8 +23,32 @@ export const POST: RequestHandler = async ({ request }) => {
           messages: [
             {
               role: "system",
-              content:
-                "You are a content generator for a website. Keep responses to 2-3 short sentences. Plain text only, no markdown.",
+              content: `You are a creative web designer and content generator.
+    
+                  Return ONLY valid JSON.
+
+                  Available component: ContentCard with props:
+                  - title (string)
+                  - text (string)  
+                  - bgColor (hex color)
+                  - textColor (hex color)
+                  - padding: "compact" | "normal" | "spacious"
+                  - alignment: "left" | "center" | "right"
+
+                  Be creative with colors and vary the design for each section.
+
+                  Example response:
+                  {
+                    "componentType": "ContentCard",
+                    "props": {
+                      "title": "Morning Coffee",
+                      "text": "There's something special about the first sip...",
+                      "bgColor": "#fef3e2",
+                      "textColor": "#3d2817",
+                      "padding": "spacious",
+                      "alignment": "center"
+                    }
+                  }`,
             },
             {
               role: "user",

@@ -1,6 +1,8 @@
 # scrollgen
 
-MVP infinite scroll AI content generator. Scroll down, AI generates new content, appends to page. Built to test the engine before adding complexity.
+MVP infinite scroll AI content generator. Scroll down, AI generates new content provided as props to a dynamic component, appends to page.
+
+This project is for learning purposes, to explore the possibilities of an LLM and get familiar with the SveltKit framework.
 
 ## Setup
 
@@ -28,21 +30,27 @@ npm run dev
 
 Then open `http://localhost:5173` in your browser.
 
-## Structure
+## Project Structure
 
 ```
 scrollgen/
 ├── src/
+│   ├── lib/
+│   │   └── components/
+│   │       ├── ContentCard.svelte    # displays individual content cards
+│   │       ├── types.ts              # TypeScript type definitions
+│   │       └── constants.ts          # shared constants
 │   ├── routes/
-│   │   ├── +page.svelte              # frontend — scroll triggers AI generation
+│   │   ├── +page.svelte              # main page — scroll triggers AI generation
 │   │   └── api/
 │   │       └── generate/
-│   │           └── +server.ts        # API endpoint — holds API key, calls HF
-│   ├── app.html                      # app template
+│   │           └── +server.ts        # API endpoint — calls HuggingFace API
+│   └── app.html                      # app template
+├── static/                           # static assets
 ├── .env                              # your secrets — never committed
-├── .env.example                      # safe to commit — shows what keys are needed
-├── svelte.config.js                  # SvelteKit config
-├── vite.config.ts                    # Vite config
+├── .env.example                      # template for environment variables
+├── svelte.config.js                  # SvelteKit configuration
+├── vite.config.ts                    # Vite configuration
 ├── .gitignore
 └── package.json
 ```
@@ -55,5 +63,3 @@ scrollgen/
 4. Server reads `HF_TOKEN` from `.env` and calls HuggingFace API
 5. Response comes back, gets appended to the page
 6. Repeat
-
-The key never touches the frontend. `.env` is in `.gitignore` so it never goes to Git.

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import ContentCard from '$lib/components/ContentCard.svelte';
+    import type { ContentCardProps } from '$lib/components/types';
 
 	let count = 0;
 	let busy = false;
-	let blocks: Array<{ id: number; content: string }> = [];
+	let blocks: Array<{ id: number; component: string; content: ContentCardProps }> = [];
 	let loader: HTMLDivElement;
 	let sentinel: HTMLDivElement;
 
@@ -20,22 +22,22 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					prompt: `Write a short piece of content for section ${count + 1} of a website.
-                     Make it feel like a personal webpage entry.
-                     2-3 sentences, conversational tone.`
+					prompt: `Generate section ${count + 1}. Make it visually different from previous sections.`
 				})
 			});
 
 			const data = await res.json();
-			const text = data.result || 'something went wrong.';
+			const content = JSON.parse(data.result);
 
 			blocks = [
 				...blocks,
 				{
 					id: count,
-					content: text
+					component: content.componentType,
+					content: content.props
 				}
 			];
+
 			count++;
 		} catch (err) {
 			console.error(err);
@@ -44,6 +46,7 @@
 		if (loader) {
 			loader.style.display = 'none';
 		}
+
 		busy = false;
 	}
 
@@ -86,7 +89,9 @@
 		<div class="block">
 			<div class="label">section {block.id + 1}</div>
 
-			<p>{block.content?.trim()}</p>
+			<ContentCard 
+				{...block.content}
+			/>
 		</div>
 	{/each}
 </div>
